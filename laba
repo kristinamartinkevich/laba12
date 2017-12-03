@@ -1,0 +1,297 @@
+using System;
+using System.Reflection;
+using System.IO;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Reflect
+{
+	//Рефлексия представляет собой процесс выявления типов во время выполнения
+	//приложения. Каждое приложение содержит набор используемых классов, интерфейсов,
+	//а также их методов, свойств и прочих кирпичиков, из которых складывается приложение.
+	//И рефлексия как раз и позволяет определить все эти составные элементы приложения.
+
+
+
+
+	//В мире .NET рефлексией (reflection) называется процесс обнаружения типов 
+    //во время выполнения. С применением служб рефлексии те же самые метаданные,
+    //которые отображает утилита ildasm.exe, можно получать программно в виде
+    //удобной объектной модели. Например, рефлексия позволяет извлечь список всех 
+    //типов, которые содержатся внутри определенной сборки *.dll или *.ехе 
+    //(или даже внутри файла *.netmodule если речь идет о многофайловой сборке),
+    //в том числе методов, полей, свойств и событий, определенных в каждом из них.
+    //Можно также динамически обнаруживать набор интерфейсов, которые поддерживаются
+    //данным типом, параметров, которые принимает данный метод, и других деталей 
+    //подобного рода (таких как имена базовых классов, информация о пространствах имен, данные манифеста и т.д.).
+
+	//Многие классы, поддерживающие рефлексию, входят в состав прикладного интерфейса.NET 
+    //Reflection API, относящегося к пространству имен System.Reflection.Как и 
+    //в любом другом пространстве имен, в System.Reflection(которое поставляется в 
+    //составе сборки mscorlib.dll) содержится набор взаимосвязанных типов.Ниже описаны некоторые наиболее важные из этих типов:
+
+
+         //Assembly
+        // В этом абстрактном классе содержатся статические методы, которые позволяют загружать сборку, исследовать ее и производить с ней различные манипуляции
+         
+
+         //AssemblyName
+         //Этот класс позволяет выяснить различные детали, связанные с идентификацией сборки (номер версии, информация о культуре и т.д.)
+
+         //EventInfо
+       // В этом абстрактном классе хранится информация о заданном событии
+
+        //FieldInfo
+        //В этом абстрактном классе хранится информация о заданном поле
+
+        //MemberInfo
+        //Этот абстрактный базовый класс определяет общее поведение для типов EventInfo, FieldInfo, MethodInfo и PropertyInfo
+
+        //MethodInfo
+        //В этом абстрактном классе содержится информация по заданному методу
+
+        //Module
+       // Этот абстрактный класс позволяет получить доступ к определенному модулю внутри многофайловой сборки
+
+       // ParameterInfо
+       // В этом классе хранится информация по заданному параметру
+
+       // PropertyInfо
+       // В этом абстрактном классе хранится информация по заданному свойству
+
+	static class Methods
+    {
+        //извлекает все общедоступные публичные методы класса
+
+
+
+        public static void Inform(string parameter)
+        {
+            Console.WriteLine("Inform:parameter={0}", parameter);
+        }
+
+
+
+
+
+
+        //получает информацию ополях
+
+        static class ReflectionTest
+        {
+            public static int Height;
+            public static int Width;
+            public static int Weight;
+            public static string Name;
+
+            public static void Write()
+            {
+                Type type = typeof(ReflectionTest); // Get type pointer
+                FieldInfo[] fields = type.GetFields(); // Obtain all fields
+                foreach (var field in fields) // Loop through fields
+                {
+                    string name = field.Name; // Get string name
+                    object temp = field.GetValue(null); // Get value
+                    if (temp is int) // See if it is an integer.
+                    {
+                        int value = (int)temp;
+                        Console.Write(name);
+                        Console.Write(" (int) = ");
+                        Console.WriteLine(value);
+                    }
+                    else if (temp is string) // See if it is a string.
+                    {
+                        string value = temp as string;
+                        Console.Write(name);
+                        Console.Write(" (string) = ");
+                        Console.WriteLine(value);
+                    }
+
+
+                }
+            }
+
+        }
+
+        //выводит по имени класса имена методов
+
+        public class MyTypeClass
+        {
+            public void MyMethods()
+            {
+            }
+            public int MyMethods1()
+            {
+                return 3;
+            }
+            protected String MyMethods2()
+            {
+                return "hello";
+            }
+        }
+
+
+        class Program
+        {
+
+            //свойства 
+            public int Awesome { get; set; }
+            public string Perls { get; set; }
+
+
+
+            static void Main()
+            {
+
+                //в текстовыи ̆файл
+                string[] lines = { "First line", "Second line", "Third line" };
+                File.WriteAllLines(@"/Users/mac/Desktop/uni/2 курс/ООП/12 лаба/WriteLines.txt", lines);
+
+
+
+
+
+                //извлекает все общедоступные публичные методы класса
+
+
+
+
+
+                // Name of the method we want to call.
+                string name = "Inform";
+
+                // Call it with each of these parameters.
+                string[] parameters = { "Sam", "Perls" };
+
+                // Get MethodInfo.
+                Type type = typeof(Methods);
+                MethodInfo info = type.GetMethod(name);
+
+                // Loop over parameters.
+                foreach (string parameter in parameters)
+                {
+                    info.Invoke(null, new object[] { parameter });
+                }
+
+
+                //информация о полях
+
+
+
+                ReflectionTest.Height = 100; // Set value
+                ReflectionTest.Width = 50; // Set value
+                ReflectionTest.Weight = 300; // Set value
+                ReflectionTest.Name = "Perl"; // Set value
+                ReflectionTest.Write(); // Invoke reflection methods
+
+
+                //свойства
+
+
+                // Create an instance of Program.
+                Program programInstance = new Program();
+                programInstance.Awesome = 7;
+                programInstance.Perls = "Hello";
+
+                // Get type2.
+                Type type2 = typeof(Program);
+
+                // Loop over properties.
+                foreach (PropertyInfo propertyInfo in type.GetProperties())
+                {
+                    // Get name2.
+                    string name2 = propertyInfo.Name;
+
+                    // Get value on the target instance.
+                    object value = propertyInfo.GetValue(programInstance, null);
+
+                    // Test value type2.
+                    if (value is int)
+                    {
+                        Console.WriteLine("Int: {0} = {1}", name2, value);
+                    }
+                    else if (value is string)
+                    {
+                        Console.WriteLine("String: {0} = {1}", name2, value);
+
+                    }
+
+
+                    //интерфейсы
+
+                    Console.WriteLine("\r\nInterfaces implemented by Dictionary<int, string>:\r\n");
+
+                    foreach (Type tinterface in typeof(Dictionary<int, string>).GetInterfaces())
+                    {
+                        Console.WriteLine(tinterface.ToString());
+                    }
+
+                    //выводит по имени класса имена методов
+                    Type myType = (typeof(MyTypeClass));
+                    // Get the public methods.
+                    MethodInfo[] myArrayMethodInfo = myType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                    Console.WriteLine("\nThe number of public methods is {0}.", myArrayMethodInfo.Length);
+                    // Display all the methods.
+                    DisplayMethodInfo(myArrayMethodInfo);
+                    // Get the nonpublic methods.
+                    MethodInfo[] myArrayMethodInfo1 = myType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                    Console.WriteLine("\nThe number of protected methods is {0}.", myArrayMethodInfo1.Length);
+                    // Display information for all methods.
+                    DisplayMethodInfo(myArrayMethodInfo1);
+
+
+
+					//некоторый метод класса, при этом значения для его
+					//параметров необходимо прочитать из текстового файла
+
+
+
+					string path = @"/Users/mac/Desktop/uni/2 курс/ООП/12 лаба/MyTest.txt";
+
+					// Create the file if it does not exist.
+					if (!File.Exists(path))
+					{
+						File.Create(path);
+					}
+
+					FileAttributes attributes = File.GetAttributes(path);
+
+					if ((attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+					{
+						// Show the file.
+						attributes = RemoveAttribute(attributes, FileAttributes.Hidden);
+						File.SetAttributes(path, attributes);
+						Console.WriteLine("The {0} file is no longer hidden.", path);
+					}
+					else
+					{
+						// Hide the file.
+						File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.Hidden);
+						Console.WriteLine("The {0} file is now hidden.", path);
+					}
+				}
+            }
+        }
+        //выводит по имени класса имена методов
+        public static void DisplayMethodInfo(MethodInfo[] myArrayMethodInfo)
+        {
+            // Display information for all methods.
+            for (int i = 0; i < myArrayMethodInfo.Length; i++)
+            {
+                MethodInfo myMethodInfo = (MethodInfo)myArrayMethodInfo[i];
+                Console.WriteLine("\nThe name of the method is {0}.", myMethodInfo.Name);
+            }
+        }
+
+		//некоторый метод класса, при этом значения для его
+		//параметров необходимо прочитать из текстового файла
+
+
+		private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)
+		{
+			return attributes & ~attributesToRemove;
+		}
+    }
+}
+
+			
